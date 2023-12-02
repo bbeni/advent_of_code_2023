@@ -1,7 +1,14 @@
 ∧       Advent of Code 2023         ∧
 =====================================
-∧                                   ∧
-=====================================
+<pre>
 
-=⊃  UIUA programming for fun 
-⊙   uiua.org
+   ∧
+  / \
+ /∧  \
+/∧⊙∧ \
+ ⍣ ⚂ ⍣
+   ⚂
+</pre>
+
+  =⊃  UIUA programming for fun \
+  ⊙   [uiua.org](www.uiua.org)
