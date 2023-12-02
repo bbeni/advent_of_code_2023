@@ -11,4 +11,4 @@
 </pre>
 
   =⊃  UIUA programming for fun \
-  ⊙   [uiua.org](www.uiua.org)
+  ⊙   [uiua.org](https://www.uiua.org/)
