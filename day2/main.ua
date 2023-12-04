@@ -1,23 +1,13 @@
 # Text ← &fras $ test.txt
 Text ← &fras $ input.txt
-
 Lines ← ⊜□¬ ∊,"\r\n" Text
 Im ← ∵⍜⊔ (⊜□¬∊, ";" ↘1⊔⊢⇌⊜□≠, @:) Lines
-R ← regex "(\\d+) red"
-G ← regex "(\\d+) green"
-B ← regex "(\\d+) blue"
 
-∵⍜⊔ ∵(⍣(parse⊢)⋅⋅0 ⇌ R) Im
-∵⍜⊔ ∵(⍣(parse⊢)⋅⋅0 ⇌ G) Im
-∵⍜⊔ ∵(⍣(parse⊢)⋅⋅0 ⇌ B) Im
-.⇌⊂⊂¤
->[12 13 14]
-.¬⊐∵⍜⊔ /↥ /↥
-+1⇡⧻
-:
-/+ ×
-
-:
+ParseColor! ← ∵⍜⊔ ∵(⍣(parse⊢)⋅⋅0 ⇌ regex ^0)
+ParseColor!("(\\d+) red") Im
+ParseColor!("(\\d+) green") Im
+ParseColor!("(\\d+) blue") Im
+:/+×:+1⇡⧻.¬⊐∵⍜⊔ /↥ /↥ >[12 13 14].⇌⊂⊂¤
 
 # Part Two
 /+/× ∵(/↥⊔)
