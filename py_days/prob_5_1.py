@@ -1,5 +1,5 @@
 import re
-with open("input.txt") as f:
+with open(0) as f:
     lines = f.readlines()
 
 seeds = lines[0].split(':')[1].strip().split(' ')
@@ -28,5 +28,5 @@ for m in maps:
     for s in cu:
         next.append(get_next(m, s))
     cu = next
-print(cu)
+#print(cu)
 print(min(cu))

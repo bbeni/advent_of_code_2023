@@ -1,5 +1,5 @@
 import re
-with open("input.txt") as f:
+with open(0) as f:
     lines = f.readlines()
 
 ## part two
@@ -50,7 +50,7 @@ def remove(r_list, r):
     return gathering
 
 
-print(seeds_range)
+#print(seeds_range)
 current = seeds_range
 for map in maps:
     next = []

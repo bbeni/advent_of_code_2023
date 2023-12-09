@@ -8,7 +8,7 @@ from operator import itemgetter, attrgetter # sorted(x, key=..(2))
 #import numpy as np
 
 
-with open("input.txt") as f:
+with open(0) as f:
 #with open("test.txt") as f:
     lines = f.readlines()
     

@@ -7,7 +7,7 @@ from itertools import accumulate, \
 from operator import itemgetter, attrgetter # sorted(x, key=..(2))
 #import numpy as np
 
-with open("input.txt") as f:
+with open(0) as f:
 #with open("test.txt") as f:
     lines = f.readlines()
     text = f.read()
@@ -18,7 +18,7 @@ dist = map(int, re.findall('\\d+', lines[1]))
 
 time = [int(''.join(map(str, time)))]
 dist = [int(''.join(map(str, dist)))]
-print(time, dist)
+#print(time, dist)
 
 
 tt = [(list(range(1,t)) ,d)  for t, d in zip(time, dist)]

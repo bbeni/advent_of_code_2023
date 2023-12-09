@@ -17,7 +17,7 @@ dist = map(int, re.findall('\\d+', lines[1]))
 
 time = [int(''.join(map(str, time)))]
 dist = [int(''.join(map(str, dist)))]
-print(time, dist)
+#print(time, dist)
 
 tt = [(list(range(1,t)) ,d)  for t, d in zip(time, dist)]
 
