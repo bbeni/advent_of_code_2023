@@ -1,6 +1,5 @@
 import argparse
 import subprocess
-import importlib
 import os
 
 def dwld_input(year, day):
@@ -11,27 +10,29 @@ def dwld_input(year, day):
     with open('session_cookie.txt') as f:
         cookie = f.readline().strip()
 
-    site = 'https://adventofcode.com/{}/day/{}/input'.format(year,day)
-    out_file = 'inputs/in{}.txt'.format(day)
+    site = f'https://adventofcode.com/{year}/day/{day}/input'
+    out_file = f'inputs/in{day}.txt'
 
-    try:
+    if os.path.exists(out_file):
         with open(out_file) as f:
             if len(f.readlines()) > 2:
                 return
-    except: pass
 
     with open(out_file, 'w') as f:
         subprocess.run(
-            ['curl', '--cookie', 'session={}'.format(cookie), site],
+            ['curl', '--cookie', f'session={cookie}', site],
             stdout=f, shell=True
         )
 
 
 def run_prob(day, n):
-    fname = 'inputs/in{}.txt'.format(args.day)
-    pyfile = 'py_days/prob_{}_{}.py'.format(args.day, n)
+    fname = f'inputs/in{args.day}.txt'
+    pyfile = f'py_days/prob_{args.day}_{n}.py'
     if os.path.exists(pyfile):
-        subprocess.run(['cat', fname,  '|', 'python', pyfile], shell=True)
+        subprocess.run(
+            ['cat', fname,  '|', 'python', pyfile],
+            shell=True
+        )
 
 
 if __name__ == '__main__':
