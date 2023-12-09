@@ -7,7 +7,7 @@ from itertools import accumulate, \
 from operator import itemgetter, attrgetter # sorted(x, key=..(2))
 #import numpy as np
 
-with open("input.txt") as f:
+with open(0) as f:
 #with open("test.txt") as f:
     lines = f.readlines()
     text = f.read()
@@ -27,7 +27,8 @@ for tl, d in tt:
     long = []
     for i, t in enumerate(tl):
         if (i % 100000 == 0):
-            print(i)
+            pass
+            #print(i)
         lasts = tl[-1] + 1
         res = (lasts - t)*(i+1)
         if res > d:
