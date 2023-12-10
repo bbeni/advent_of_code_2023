@@ -26,7 +26,26 @@ def dwld_input(year, day):
 
 
 def run_prob(day, n, test=False):
-    fname = f'inputs/te{args.day}.txt' if test else f'inputs/in{args.day}.txt'
+
+    te0 = f'inputs/te{args.day}.txt'
+    te1 = f'inputs/te{args.day}_1.txt'
+    te2 = f'inputs/te{args.day}_2.txt'
+    in0 = f'inputs/in{args.day}.txt'
+
+    
+    '''heuristic what test input to take, specific files have higher prio.
+       i.e. te_{day}_1.txt, te_{day}_2.txt > te.txt'''
+
+    if not test:
+        fname = in0
+    elif n==1 and os.path.exists(te1):
+        fname = te1
+    elif n==2 and os.path.exists(te2):
+        fname = te2
+    else:
+        fname = te0
+    
+    
     pyfile = f'py_days/prob_{args.day}_{n}.py'
     if os.path.exists(pyfile):
         subprocess.run(
@@ -37,7 +56,7 @@ def run_prob(day, n, test=False):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        prog='RunPyDays',
+        prog='run_py_day.py',
         description='Run a specfic python problem of AOC',
         epilog='Good Luck!'
     )

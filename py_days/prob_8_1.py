@@ -8,9 +8,9 @@ for i,  l in enumerate(open(0)):
     l = l.strip()
     if (i == 0):
         instructions = 100*l
-        print(instructions)
+        #print(instructions)
         continue
-    if (l is ""):
+    if (l == ""):
         continue
     
     start = l.split(" = ")[0]
@@ -18,14 +18,14 @@ for i,  l in enumerate(open(0)):
     mappings[start] = options
 
 
-print(mappings)
+#print(mappings)
 
 final = "AAA"
 i = 0
 while (final != "ZZZ"):
     index = 0 if instructions[i] == "L" else 1
     final = mappings[final][index]
-    print(final)
+    #print(final)
     i += 1
 print(i)
 

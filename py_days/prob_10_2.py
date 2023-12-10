@@ -102,9 +102,9 @@ flood(mask, np.array([0,0]))
 
 contracted = mask[1:-1:2, 1:-1:2].copy()
 
-im_arr = (contracted == 0).astype(np.uint8)*200
-im2 = Image.fromarray(im_arr)
-im2.show()
+#im_arr = (contracted == 0).astype(np.uint8)*200
+#im2 = Image.fromarray(im_arr)
+#im2.show()
 
 n = (contracted == 0).astype(np.uint8).sum()
 
