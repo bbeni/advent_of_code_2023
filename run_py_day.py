@@ -25,13 +25,13 @@ def dwld_input(year, day):
         )
 
 
-def run_prob(day, n):
-    fname = f'inputs/in{args.day}.txt'
+def run_prob(day, n, test=False):
+    fname = f'inputs/te{args.day}.txt' if test else f'inputs/in{args.day}.txt'
     pyfile = f'py_days/prob_{args.day}_{n}.py'
     if os.path.exists(pyfile):
         subprocess.run(
             ['cat', fname,  '|', 'python', pyfile],
-            shell=True
+            shell=True,
         )
 
 
@@ -55,6 +55,9 @@ if __name__ == '__main__':
     parser.add_argument('-f', '--first',
                         action='store_false',
                         help='run only first problem')
+    parser.add_argument('-t', '--test',
+                        action='store_true',
+                        help='run test input only')
 
     args = parser.parse_args()
 
@@ -62,8 +65,14 @@ if __name__ == '__main__':
         dwld_input(args.year, args.day)
 
     if args.second:
-        print(f'======= Day {args.day} solution to problem 1')
-        run_prob(args.day, 1)
+        print(f'=========== Day {args.day} problem 1')
+        run_prob(args.day, 1, test=True)
+        if not args.test:
+            run_prob(args.day, 1)
+
     if args.first:
-        print(f'======= Day {args.day} solution to problem 2')
-        run_prob(args.day, 2)
+        print(f'=========== Day {args.day} problem 2')
+        run_prob(args.day, 2, test=True)
+        if not args.test:
+            run_prob(args.day, 2)
+
