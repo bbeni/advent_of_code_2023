@@ -3,7 +3,6 @@ import math
 
 mappings = {}
 
-
 for i,  l in enumerate(open(0)):
     l = l.strip()
     if (i == 0):
@@ -17,56 +16,33 @@ for i,  l in enumerate(open(0)):
     options = l.split(" = ")[1][1:-1].split(', ')
     mappings[start] = options
 
-print(mappings)
+''' brute force alert '''
 
 starts = [k for k in mappings.keys() if k[-1] == "A"]
+last_round = starts.copy()
 
+instr_cycle_length = len(instructions)
+instructions_index = [0 if instruction == "L" else 1 for instruction in instructions]
 
+i = 0
+for instruction_i in cycle(instructions_index):
+    reached = 0
+    next_round = []
+    for last in last_round:
+        next = mappings[last][instruction_i]
+        next_round.append(next)
 
-finals = starts
-print(finals)
-n = []
+        if next[-1] == 'Z':
+            reached += 1
+    last_round = next_round
+    i += 1
+    if i%(instr_cycle_length*100000)==0:
+        print(i/52766656211*100)
+        print(last_round, i)
+    if reached == len(starts):
+        break
 
-
-
-so_fars = []
-
-for final in finals:
-    i = 0
-
-    so_far = []
-    goals = []
-    cycles = []
-    for instruction in cycle(instructions):
-        index = 0 if instruction == "L" else 1
-        final = mappings[final][index]
-
-
-        i += 1
-        if final[-1] == 'Z':
-            goal = i
-            goals.append(i)
-            #print(i)
-        # cycle
-
-        if final in so_far:
-            length = so_far[::-1].index(final)+1
-            #print(length)
-            if length % len(instructions) == 0:
-                print('cycle length divisible by instr_length')
-                print(len(so_far), goals, i)
-                break
-
-
-        
-        #if final in so_far:
-        #    so_far.append(final)
-        #    break
-        so_far.append(final)
-
-    so_fars.append(so_far)
-
-
+print(last_round, i)
 
 
 # > 52766656211
