@@ -1,23 +1,9 @@
-from itertools import permutations, tee
-import functools
 
-
-def memoized_generator(f):
-    cache = {}
-    @functools.wraps(f)
-    def wrapper(*args, **kwargs):
-        k = args, frozenset(kwargs.items())
-        it = cache[k] if k in cache else f(*args, **kwargs)
-        cache[k], result = tee(it)
-        return result
-    return wrapper
 
 
 with open(0) as f:
     lines = f.readlines()
 
-
-@memoized_generator
 def perm_sums_up(n, length):
     if length == 0:
         return []
@@ -40,13 +26,19 @@ def generate_from_counts(counts, l):
 
     results = []
     for arr in perm_sums_up(n_sep, n_c+2):
-        res = ''
-        for i, sep in zip(range(0, n_c), arr):
-            res += sep*'.'  + counts[i]*'#' + '.'
-        res += arr[-2]*'.' + counts[n_c]*'#' + arr[-1]*'.'
-        results.append(res)
+        results.append(make_seq(counts, arr))
+
 
     return results
+
+def make_seq(counts, sep_arr):
+    ### counts [1 2 3 1]
+    ### sep_arr [0 0 1 2 2]
+    ### -> '#.##..###...#..'
+    res = sep_arr[0]*'.'
+    for a, b in zip(counts[:-1], sep_arr[1:-1]):
+        res += a*'#' + '.' + b*'.'
+    return res + counts[-1]*'#' + sep_arr[-1]*'.'
 
 def matches(a, b):
     #print(a)
@@ -61,19 +53,53 @@ def matches(a, b):
 s = 0
 for i, l in enumerate(lines):
     a, b = l.split(' ')
-    a = 5*a
     b = b.strip()
-    b = (5*(b+','))[:-1]
+    b = (b+',')[:-1]
     counts = list(map(int, b.strip().split(',')))
-    seq = a.strip().strip('.')
-    print(seq)
-    print(counts)    
+    
+    seq = a
+    
+    q = 0
+    matching = []
+    for x in generate_from_counts(counts, len(seq)):
+        if matches(x, seq):
+            q+=1
+            matching.append(x)
+
+
+    
+    seq = '?' + a + '?'
     t = 0
+    matching = []
     for x in generate_from_counts(counts, len(seq)):
         if matches(x, seq):
             t+=1
+            matching.append(x)
 
-    #print(t, s)
-    s += t
+    seq = a + '?'
+    t1 = 0
+    matching = []
+    for x in generate_from_counts(counts, len(seq)):
+        if matches(x, seq):
+            t1+=1
+            matching.append(x)
+
+    seq = '?' + a
+    t2 = 0
+    matching = []
+    for x in generate_from_counts(counts, len(seq)):
+        if matches(x, seq):
+            t2+=1
+            matching.append(x)
+
+    if q == 1:
+        t1, t2, t = 1, 1, 1
+    print(t1*t2*t**3, t, t1, t2)
+    s += t1*t2*t**3
 
 print(s)
+
+# too high 14071588376276841
+# too low      9114117623639
+# wrong        9114117628619
+# wrong       26727076155415
