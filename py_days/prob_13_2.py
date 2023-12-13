@@ -77,3 +77,4 @@ for line in lines:
 
 
 print(s)
+print("\033[92mEZCLAP\033[0m")
