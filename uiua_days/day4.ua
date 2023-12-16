@@ -1,9 +1,9 @@
-# Text ← &fras $ test.txt
-Text ← &fras $ input.txt
+# Text ← &fras $ inputs/te4.txt
+Text ← &fras $ inputs/in4.txt
 Lines ← ⊜□¬ ∊,"\r\n" Text
 
 Trim ← ▽×⍜(⊟⇌)≡\↥.≠@ .
-Cards ← ∵⊔∵⍜⊔(∵⍜⊔(⊜parse ¬∊, " " Trim)) ∵⍜⊔ (⊜□¬∊, "|" ↘1⊔⊢⇌⊜□≠, @:) Lines
+Cards ← ∵°□∵⍜°□(∵⍜°□(⊜⋕ ¬∊, " " Trim)) ∵⍜°□ (⊜□¬∊, "|" ↘1°□⊢⇌⊜□≠, @:) Lines
 Win ← ⊐≡⊡0 Cards
 Yours ← ⊐≡⊡1 Cards
 /+ ⌊ ⁿ:2 ≡(-1/+ .∊) Win Yours

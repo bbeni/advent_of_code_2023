@@ -1,4 +1,4 @@
-In ← ≡⍜°□ (⊜⋕ ≠, @ ) ⊜□ ¬∊, "\r\n" &fras "in.txt"
+In ← ≡⍜°□ (⊜⋕ ≠, @ ) ⊜□ ¬∊, "\r\n" &fras "inputs/in9.txt"
 Next ← ↘¯1 -: ↻1 .
 
 # part one
