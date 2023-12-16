@@ -10,38 +10,37 @@ class BeamPart {
     int x, y;
     int dx, dy;
     BeamPart(int x_, int y_, int dx_, int dy_): x(x_), y(y_), dx(dx_), dy(dy_) {}
-    bool inBounds(int w, int h)
+    bool inBounds(int w, int h) 
     {
         return x<w && y<h && x>=0 && y>=0;
     }
 };
 
-bool isin(BeamPart b, vector<BeamPart> &parts)
-{
-    for (auto &part : parts)
+bool is_pos_in(BeamPart b, vector<BeamPart> &parts) {
+    // check only for position
+    for (auto &part : parts) 
     {
         if (b.x == part.x && b.y == part.y) return true;
     }
     return false;
 }
 
-bool isindir(BeamPart b, vector<BeamPart> parts)
-{
+bool is_in(BeamPart b, vector<BeamPart> &parts) {
     // check also direction
-    for (auto &part : parts)
+    for (auto &part : parts) 
     {
         if (b.x == part.x && b.y == part.y && b.dx == part.dx && b.dy == part.dy) return true;
     }
     return false;
 }
 
-void printenergized(vector<BeamPart> parts, int w, int h)
+void print_energized(vector<BeamPart> &parts, int w, int h)
 {
-    for( int i = 0; i<h; i++)
+    for( int i = 0; i<h; i++) 
     {
-        for ( int j = 0; j< w; j++)
+        for ( int j = 0; j< w; j++) 
         {
-            if (isin(BeamPart(j, i, 0, 0), parts))
+            if (is_pos_in(BeamPart(j, i, 0, 0), parts)) 
             {
                 cout << '#';
             } else {
@@ -50,7 +49,6 @@ void printenergized(vector<BeamPart> parts, int w, int h)
         }
         cout << endl;
     }
-
 }
 
 
@@ -59,71 +57,79 @@ int find_n_energized(std::vector<std::string> grid, BeamPart start, int max_iter
     int w = grid[0].length();
     int h = grid.size();
 
-    std::vector<BeamPart> beam {start};
-    std::vector<BeamPart> found {};
+    std::vector<BeamPart> beam_front {start};
+    std::vector<BeamPart> found_energized {};
     std::vector<BeamPart> found_directional {};
-    for(int round=0; round<max_iter; round++ ) {
+    for(int round=0; round<max_iter; round++ ) 
+    {
         //cout << "round: " << round << endl;
-        std::vector<BeamPart> newbeam {};
-        for(auto& bpart: beam) {
-            if (!bpart.inBounds(w, h)) continue;
+        std::vector<BeamPart> next_beam_front {};
+        for(auto& beam_part: beam_front) 
+        {
 
-            if (isindir(bpart, found_directional))
+            if (!beam_part.inBounds(w, h)) 
+            {
+                continue;
+            }
+
+            if (is_in(beam_part, found_directional)) 
             {
                 //cancel loops
                 continue;
             }
-            found_directional.push_back(bpart);
+            found_directional.push_back(beam_part);
 
-            if (!isin(bpart, found)){
-                found.push_back(bpart);
+            if (!is_pos_in(beam_part, found_energized)) 
+            {
+                found_energized.push_back(beam_part);
             }
-            if (bpart.dx != 0) {
+
+            if (beam_part.dx != 0) 
+            {
                 // right or left
-                switch (grid[bpart.y][bpart.x])
+                switch (grid[beam_part.y][beam_part.x])
                 {
                 case '|':
-                    newbeam.push_back(BeamPart(bpart.x, bpart.y-1, 0, -1));
-                    newbeam.push_back(BeamPart(bpart.x, bpart.y+1, 0, 1));
+                    next_beam_front.push_back(BeamPart(beam_part.x, beam_part.y-1, 0, -1));
+                    next_beam_front.push_back(BeamPart(beam_part.x, beam_part.y+1, 0, 1));
                     break;
                 case '/':
-                    newbeam.push_back(BeamPart(bpart.x, bpart.y-bpart.dx, 0, -bpart.dx));
+                    next_beam_front.push_back(BeamPart(beam_part.x, beam_part.y-beam_part.dx, 0, -beam_part.dx));
                     break;
                 case '\\':
-                    newbeam.push_back(BeamPart(bpart.x, bpart.y+bpart.dx, 0, bpart.dx));
+                    next_beam_front.push_back(BeamPart(beam_part.x, beam_part.y+beam_part.dx, 0, beam_part.dx));
                     break;
                 default:
-                    newbeam.push_back(BeamPart(bpart.x+bpart.dx, bpart.y, bpart.dx, bpart.dy));
+                    next_beam_front.push_back(BeamPart(beam_part.x+beam_part.dx, beam_part.y, beam_part.dx, beam_part.dy));
                     break;
                 }
             } else {
                 // up or down
-                switch (grid[bpart.y][bpart.x])
+                switch (grid[beam_part.y][beam_part.x])
                 {
                 case '-':
-                    newbeam.push_back(BeamPart(bpart.x-1, bpart.y, -1, 0));
-                    newbeam.push_back(BeamPart(bpart.x+1, bpart.y, 1, 0));
+                    next_beam_front.push_back(BeamPart(beam_part.x-1, beam_part.y, -1, 0));
+                    next_beam_front.push_back(BeamPart(beam_part.x+1, beam_part.y, 1, 0));
                     break;
                 case '/':
-                    newbeam.push_back(BeamPart(bpart.x-bpart.dy, bpart.y, -bpart.dy, 0));
+                    next_beam_front.push_back(BeamPart(beam_part.x-beam_part.dy, beam_part.y, -beam_part.dy, 0));
                     break;
                 case '\\':
-                    newbeam.push_back(BeamPart(bpart.x+bpart.dy, bpart.y, bpart.dy,0));
+                    next_beam_front.push_back(BeamPart(beam_part.x+beam_part.dy, beam_part.y, beam_part.dy,0));
                     break;
                 default:
-                    newbeam.push_back(BeamPart(bpart.x, bpart.y+bpart.dy, bpart.dx, bpart.dy));
+                    next_beam_front.push_back(BeamPart(beam_part.x, beam_part.y+beam_part.dy, beam_part.dx, beam_part.dy));
                     break;
                 }
             }
             
         }
-        beam.clear();
-        beam = newbeam;
+        beam_front.clear();
+        beam_front = next_beam_front;
 
     }
-    //printenergized(found, w, h);
-
-    return found.size();
+    //print_energized(found, w, h);
+    return found_energized.size();
 }
 
 void problem1()
@@ -175,7 +181,6 @@ void problem2()
         int x = find_n_energized(grid, BeamPart(w-1,i,-1,0), 10000);
         if (x>max) {max = x;}
     }
-
 
     cout << max << endl;
 }
