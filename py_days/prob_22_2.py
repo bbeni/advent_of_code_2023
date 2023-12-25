@@ -1,4 +1,5 @@
 import numpy as np
+from copy import deepcopy
 
 bricks = []
 height_map = np.zeros((10,10))
@@ -26,33 +27,44 @@ for id, brick in enumerate(by_z, 1):
     height_map[start[0]:end[0]+1, start[1]:end[1]+1] = z
  
 
-# search next layers
-supporting = []
+# search previous layers
+supported_by = []
 for id, brick in enumerate(bricks_relaxed, 1):
     start = brick[0][:2]
     end = brick[1][:2]
-    zb = brick[1][2]+1
+    zb = brick[0][2]-1
     x = space[start[0]:end[0]+1, start[1]:end[1]+1, zb]
     x= x.astype(np.int32).flatten().tolist()
     res = set(x)
     if 0 in res:
         res.remove(0)
-    supporting.append(res)
+
+    # add floor id
+    if len(res) == 0:
+        res.add(100000)
+
+    supported_by.append(res)
+
+
+def collapse(support, id, max_iter=2):
+    if max_iter == 0:
+        return support
+    for x in support:
+        if id in x:
+            x.remove(id)
+    for id_n, x in enumerate(support, 1):
+        if len(x) == 0:
+            support = collapse(support, id_n, max_iter-1)
+    return support
 
 s = 0
-for id, support in enumerate(supporting, 1):
-    # check every one in top layer and see if they have other supports
-    others = supporting[:id-1] + supporting[id:]
-    others = [item for row in others for item in row]
-    
-    good = True
-    for id_s in support:
-        if id_s not in others:
-            good = False
-    
-    if good:
-        s+=1
-
-
+for id in range(1, len(supported_by)+1):
+    print('doing', id)
+    support = deepcopy(supported_by)
+    res = len([x for x in collapse(support, id) if x==set()])
+    s += res
 
 print(s)
+
+# 6362 too low
+# 32 wrong
