@@ -1,67 +1,73 @@
-from copy import deepcopy
+import random
+import sys
+import time
+import cProfile
+
+sys.setrecursionlimit(30000)
+
 
 grid = []
 for line in open(0):
-    grid.append(line.strip())
+    grid.append(line.strip()
+                .replace('>', '.')
+                .replace('<', '.')
+                .replace('^', '.')
+                .replace('v', '.'))
 
 width, height = len(grid[0]), len(grid)
 
-# only one hike with one starting coord
-hikes = [[[0, 1]]]
-finishers = []
+hits = 0
 
-# ugly brute force XD
-for i in range(15000):
-    # one step
-    print('step ', i, len(hikes))
+def walk(current, path=()):
+    global hits
+    # next possible paths
+    nexts = []
+    for neighbouring in ((current[0]+1, current[1]),
+                            (current[0]-1, current[1]),
+                            (current[0], current[1]+1),
+                            (current[0], current[1]-1)):
+        
+        if not (0 <= neighbouring[0] < height):
+            continue
 
-    new_paths = []
-    to_delete = []
-    for hike_nr in range(len(hikes)):
-        current = hikes[hike_nr][-1]
+        if grid[neighbouring[0]][neighbouring[1]] == '#':
+            continue
 
-        nexts = []
-        for neighbouring in [[current[0]+1, current[1]],
-                             [current[0]-1, current[1]],
-                             [current[0], current[1]+1],
-                             [current[0], current[1]-1]]:
-            if not (0 <= neighbouring[0] < height and 0 <= neighbouring[1] < width):
-                continue
-            if neighbouring in hikes[hike_nr]:
-                continue
-            tile = grid[neighbouring[0]][neighbouring[1]]
-            if tile == '#':
-                continue
-            nexts.append(neighbouring)
+        if neighbouring in path:
+            continue
 
-        if len(nexts) == 0:
-            to_delete.append(hikes[hike_nr])
-            if current[0] == height-1 and current[1] == width-2:
-                #finishers.append(deepcopy(hikes[hike_nr]))
-                finishers.append(len(hikes[hike_nr]))
-                continue
+        
+        nexts.append(neighbouring)
 
-        elif len(nexts) == 1:
-            hikes[hike_nr].append(nexts[0])
-        elif len(nexts) == 2:
-            new_paths.append(deepcopy(hikes[hike_nr]))
-            new_paths[-1].append(nexts[1])
-            hikes[hike_nr].append(nexts[0])
+    if len(nexts) == 1:
+        return walk(nexts[0], path) + 1
 
-        elif len(nexts) == 3:
-            new_paths.append(deepcopy(hikes[hike_nr]))
-            new_paths[-1].append(nexts[1])
-            new_paths.append(deepcopy(hikes[hike_nr]))
-            new_paths[-1].append(nexts[2])
-            hikes[hike_nr].append(nexts[0])
-        else:
-            assert(False)
-    hikes.extend(new_paths)
 
-    print('deleted paths: ', len(to_delete))
-    for td in to_delete:
-        hikes.remove(td)
-    if len(hikes) == 0:
-        break
+    if len(nexts) == 0:
+        if current[0] == height-1:
+            hits+=1
+            print('juhuu:', hits)
+            return 1
+        return -1203123123
+    
+    max_l = walk(nexts[0], (current,)+path)
+    for next in nexts[1:]:
+        n = walk(next, (current,)+path)
+        if n> max_l:
+            max_l = n
+    return max_l +1
 
-print(max(finishers)-1)
+    #next_lengths = []
+    #for next in nexts:
+    #   next_lengths.append(walk(next, (current,)+path))
+    #return max(next_lengths) + 1
+
+
+def main():
+    s = time.time()
+    res = walk((0,1))
+    print('took: ', time.time() - s)
+    print(res-1)
+    # too low 5102
+    
+main()
