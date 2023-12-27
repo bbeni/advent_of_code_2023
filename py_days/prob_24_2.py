@@ -1,3 +1,10 @@
+'''
+Authors:
+    https://github.com/NardoUzmaky
+    https://github.com/bbeni
+
+'''
+
 import sympy 
 
 coords = []
