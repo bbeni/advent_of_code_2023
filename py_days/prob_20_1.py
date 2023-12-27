@@ -1,16 +1,10 @@
-from ast import Mod
-
-
 LOW = 0
 HIGH = 1
 
 OFF = False
 ON = True
 
-
-
 modules = {}
-
 
 class Machine:
     def __init__(self) -> None:
@@ -125,7 +119,6 @@ class Conjunction(Module):
 class Broadcaster(Module):
     def propagate(self, pulse_in, sent_by):
         return pulse_in
-
 
 
 machine = Machine()
