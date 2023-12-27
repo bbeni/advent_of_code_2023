@@ -4,8 +4,6 @@ HIGH = 1
 OFF = False
 ON = True
 
-modules = {}
-
 class Machine:
     def __init__(self) -> None:
         self.modules = {}
