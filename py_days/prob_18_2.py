@@ -68,7 +68,7 @@ print(int(s+length_of_boundary/2+1))
 # too high 264268309852389
 # too low  250022064876277
 
-debug = True
+debug = False
 if debug:
     for rect, i in zip(rectangle_midpoints, i_counts):
         plt.plot(rect[0], rect[1], 'x')
