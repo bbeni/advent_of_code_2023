@@ -77,6 +77,9 @@ if __name__ == '__main__':
     parser.add_argument('-t', '--test',
                         action='store_true',
                         help='run test input only')
+    parser.add_argument('-r', '--real',
+                        action='store_true',
+                        help='run real input only')
 
     args = parser.parse_args()
 
@@ -85,13 +88,15 @@ if __name__ == '__main__':
 
     if args.second:
         print(f'=========== Day {args.day} problem 1')
-        run_prob(args.day, 1, test=True)
+        if not args.real:
+            run_prob(args.day, 1, test=True)
         if not args.test:
             run_prob(args.day, 1)
 
     if args.first:
         print(f'=========== Day {args.day} problem 2')
-        run_prob(args.day, 2, test=True)
+        if not args.real:
+            run_prob(args.day, 2, test=True)
         if not args.test:
             run_prob(args.day, 2)
 

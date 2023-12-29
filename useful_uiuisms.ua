@@ -1,3 +1,5 @@
+# Get Lines of '\r\n' separated text
+Lines ← ⊜□¬ ∊,"\r\n"
 # string <- string
 Strip ← ▽ ×⍜(⊟⇌) ≡\↥.≠@ .
 # array(boxes) <- char string
@@ -13,3 +15,6 @@ Sparse ← ⁅⊞⋅⋅(÷1.9⚂) .⊚
 # ↯ 4_4 0
 # ☇ 1 ⊞⊟.-⌊÷2⧻.⇡⧻.↯3_3 2 Sparse 10
 # ↯3_3 2 Sparse 10
+
+Text ← &fras $ test.txt
+# Text ← &fras $ input.txt
