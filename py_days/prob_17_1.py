@@ -5,74 +5,88 @@ only works for small input sizes
 need a better idea
 
 '''
-import numpy as np
-import sys
-sys.setrecursionlimit(10000)
+from collections import defaultdict
+from heapq import heapify, heappop, heappush
+from itertools import product
+
+def dijkstra(nodes: list, edges: dict, sources:list):
+    '''start at source and compute all minimal distances
+        uses the priority queue from
+        https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
+    '''
+    visited = set()
+    # some large number
+    distances = defaultdict(lambda: 2**59)
+    prev = {}
+
+    # priority queue
+    Q = []
+    for source in sources:
+        distances[source] = 0
+        Q.append((0, source))
+        prev[source] = source
+    heapify(Q)
+
+    while Q != []:
+        _, current_node = heappop(Q)
+        if current_node in visited:
+            continue
+        visited.add(current_node)
+        
+        for node, weight in edges[current_node]:
+            if node in visited:
+                continue
+            new_dist = distances[current_node] + weight
+            if new_dist < distances[node]:
+                distances[node] = new_dist
+                heappush(Q, (new_dist, node))
+                prev[node] = current_node
+
+    return distances, prev
+
+def create_graph():
+    nodes = []
+    for from_vertical in [True, False]:
+        for i, j in product(range(WIDTH), range(WIDTH)):
+            nodes.append((i, j, from_vertical))
+    edges = defaultdict(list)
+    for node in nodes:
+        i, j, from_vertical = node
+        for offset in [1,2,3,-1,-2,-3]:
+            s = 1 if offset>0 else -1
+            if from_vertical:
+                # connect horizontal
+                if i+offset < 0 or i+offset >= WIDTH:
+                    continue
+                w = sum([grid[i+o][j] for o in range(s, offset+s, s)])
+                edges[node].append(((i+offset, j, False), w))
+            else:
+                # connect vertical
+                if j+offset < 0 or j+offset >= WIDTH:
+                    continue
+                w = sum([grid[i][j+o] for o in range(s, offset+s, s)])
+                edges[node].append(((i, j+offset, True), w))
+    
+    
+    nodes.insert(0, 'start')
+    nodes.append('end')
+    edges['start'] = [
+        ((0, 0, True), 0),
+        ((0, 0, False), 0)
+    ]
+    edges[(WIDTH-1, WIDTH-1, True)].append(('end', 0))
+    edges[(WIDTH-1, WIDTH-1, False)].append(('end', 0))
+
+    return nodes, edges
+
 
 lines = [line.strip() for line in open(0).readlines()]
-
 grid = [list(map(int, line)) for line in lines]
-grid = np.array(grid)
-WIDTH = grid.shape[0]
+WIDTH = len(grid)
 
-def create_shifted_plus(x_shift, y_shift, grid, pad=3):
-    grid_padded = np.zeros((grid.shape[0]+pad*2, grid.shape[1]+pad*2))
-    grid_padded[:,:] = np.Infinity
-    grid_padded[pad:-pad-99,pad:-pad-99] = grid[:-99,:-99]
-    grid2 = grid_padded.copy()
-
-    assert( x_shift == 0 or y_shift == 0 )
-    if y_shift:
-        step = np.sign(y_shift)
-        for y in range(step, y_shift+step, step):
-            end = None if -pad-y == 0 else -pad-y
-            grid2[:,pad:-pad] += grid_padded[:,pad-y:end]
-    else:
-        step = np.sign(x_shift)
-        for x in range(step, x_shift+step, step):
-            end = None if -pad-x == 0 else -pad-x
-            grid2[pad:-pad,:] += grid_padded[pad-x:end,:]
-
-    return grid2[pad:-pad, pad:-pad] - grid
-
-def best_path(start, end, length, dir_idx, vertical=True):
-    x, y = start
-    if (x+y+1)*9 < length:
-        return
-    if start[0] < 0 or start[0] >= WIDTH or start[1] < 0 or start[1] >= WIDTH:
-        return
-    if length > min_so_far[x, y, dir_idx]:
-        return 
-    min_so_far[x, y, dir_idx] = length
-    if start == end:
-        print('found', length, x, y)
-        return
-
-    if vertical:
-        for i in [3,-3,2,-2,1,-1]:
-            l = length + LR[i][x,y]
-            best_path((start[0], start[1]+i), end, l, i, False)
-    else:
-        for i in [3,-3,2,-2,1,-1]:
-            l = length + UD[i][x,y]
-            best_path((start[0]+i, start[1]), end, l, i, True)
-
-# create L R U D matrices shifted by 1,2,3 in both directions
-UD = [create_shifted_plus(a,0,grid) for a in [-1,-2,-3,3,2,1]]
-LR = [create_shifted_plus(0,a,grid) for a in [-1,-2,-3,3,2,1]]
-
-# dummy index to be able to acess UD[1] as first
-UD.insert(0, None)
-LR.insert(0, None)
-
-
-# x, y,  dummy + direction index
-min_so_far = np.zeros((WIDTH, WIDTH, 7))
-min_so_far[:,:] = 100000000
-
-start = (0, 0)
-end = (WIDTH-100, WIDTH-100)
-x = best_path(start, end, 0, 0, vertical=True)
-print(np.min(min_so_far[end[0], end[1],:]))
+nodes, edges = create_graph()
+dist, path = dijkstra(nodes, edges, ['start'])
+print(dist['end'])
 
 # 1245 too high
+# 1178 too low
