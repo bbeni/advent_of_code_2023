@@ -1,89 +1,78 @@
 '''
 notes:
 ======
+only works for small input sizes
+need a better idea
 
-NxN
--path never intersects itself (every node only once)
--path has a smaller or equal energy value than any trivial path
--touching:
-    when corner touching possible?
--edge only 1 to 9 values
--if we know path length l and ignore length 3 constraint: 
-    l = 2N-1 case:
-        2^l = 2^(2N-1) possible paths -> not even that is brutforcible
-        but we could go through all contra diagonal elements and
-        reduce the problem to 2*(1 + (N-1) + (N-2)(N-3)/2 + ..) < N*2^(N+1)
-        (might be very wrong haha)
-
-        funny: add m_(i-1)i += m_ii m_i(i-1) += m_ii until contra diagonal
-        from m_00 too until contra diagonal.. ok wrong but maybe idea
-
-        better: for every contra diagonal n m_ab += min(m(a+1)b, m(a)(b+1))
-
-    l > 2N-1 case:
-        o = (l - (2N-1))/2 is the number backwards going paths 
-        (negative indices change)
-        note: some diagonals get crossed additionally in total 2*o times.
-        
-
-
-ideas:
-======
-flood fill with delay
-lagrange multipliers
-monte carlo
-simulated annealing
-a*
-dykstra
-diagonalize?
-
-        
 '''
 import numpy as np
-from scipy.sparse import coo_array
+import sys
+sys.setrecursionlimit(10000)
 
 lines = [line.strip() for line in open(0).readlines()]
 
 grid = [list(map(int, line)) for line in lines]
 grid = np.array(grid)
-print(grid)
+WIDTH = grid.shape[0]
 
-def build_adjacency(grid):
-    N = grid.shape[0]*grid.shape[1]
-    row = []
-    col = []
-    data = []
-    for i in range(grid.shape[0]):
-        for j in range(grid.shape[1]):
-            this = i+j*grid.shape[0]
-            for k, l in [(i, j-1), (i, j+1), (i-1, j), (i+1,j)]:
-                if k < 0 or l < 0 or k >= grid.shape[0] or l >= grid.shape[1]:
-                    continue
-                index = k+l*grid.shape[0]
-                row.extend([this, index])
-                col.extend([index, this])
-                data.extend([grid[i][j], grid[i][j]])
-    A = coo_array((data,(row, col))).todia()
-    return A
+def create_shifted_plus(x_shift, y_shift, grid, pad=3):
+    grid_padded = np.zeros((grid.shape[0]+pad*2, grid.shape[1]+pad*2))
+    grid_padded[:,:] = np.Infinity
+    grid_padded[pad:-pad-99,pad:-pad-99] = grid[:-99,:-99]
+    grid2 = grid_padded.copy()
 
-N = grid.shape[0]*grid.shape[1]
-A = build_adjacency(grid)
+    assert( x_shift == 0 or y_shift == 0 )
+    if y_shift:
+        step = np.sign(y_shift)
+        for y in range(step, y_shift+step, step):
+            end = None if -pad-y == 0 else -pad-y
+            grid2[:,pad:-pad] += grid_padded[:,pad-y:end]
+    else:
+        step = np.sign(x_shift)
+        for x in range(step, x_shift+step, step):
+            end = None if -pad-x == 0 else -pad-x
+            grid2[pad:-pad,:] += grid_padded[pad-x:end,:]
+
+    return grid2[pad:-pad, pad:-pad] - grid
+
+def best_path(start, end, length, dir_idx, vertical=True):
+    x, y = start
+    if (x+y+1)*9 < length:
+        return
+    if start[0] < 0 or start[0] >= WIDTH or start[1] < 0 or start[1] >= WIDTH:
+        return
+    if length > min_so_far[x, y, dir_idx]:
+        return 
+    min_so_far[x, y, dir_idx] = length
+    if start == end:
+        print('found', length, x, y)
+        return
+
+    if vertical:
+        for i in [3,-3,2,-2,1,-1]:
+            l = length + LR[i][x,y]
+            best_path((start[0], start[1]+i), end, l, i, False)
+    else:
+        for i in [3,-3,2,-2,1,-1]:
+            l = length + UD[i][x,y]
+            best_path((start[0]+i, start[1]), end, l, i, True)
+
+# create L R U D matrices shifted by 1,2,3 in both directions
+UD = [create_shifted_plus(a,0,grid) for a in [-1,-2,-3,3,2,1]]
+LR = [create_shifted_plus(0,a,grid) for a in [-1,-2,-3,3,2,1]]
+
+# dummy index to be able to acess UD[1] as first
+UD.insert(0, None)
+LR.insert(0, None)
 
 
-distance = np.zeros((N,))
-distance[:] = np.inf
-distance[0] = 0
+# x, y,  dummy + direction index
+min_so_far = np.zeros((WIDTH, WIDTH, 7))
+min_so_far[:,:] = 100000000
 
-previous = []
-
-print(distance)
-
-def dykstra(A, start=0):
-    pass
-
-
-
-#print(A)
-
+start = (0, 0)
+end = (WIDTH-100, WIDTH-100)
+x = best_path(start, end, 0, 0, vertical=True)
+print(np.min(min_so_far[end[0], end[1],:]))
 
 # 1245 too high
